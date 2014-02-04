@@ -77,6 +77,29 @@ public:
         
           }//>val
     }//insert
+    int sizeNode(Node* leaf){
+        if(leaf==NULL)
+            return 0;
+        else
+        {
+            return (sizeNode(leaf->left)+1+sizeNode(leaf->right));
+        }
+    }
+    int depth(Node* leaf){
+        if(leaf==NULL)
+            return 0;
+        else
+        {
+            int left,right;
+            left=sizeNode(leaf->left);
+            right=sizeNode(leaf->right);
+            if(left>right)
+            return left;
+            else 
+                return right;
+        }
+        
+    }
     void print(Node* leaf){
         //in order traversal
         if (leaf){
@@ -114,6 +137,19 @@ public:
         }
         else
             return prev;
+    }
+    void reverse(Node* leaf){
+        if(leaf==NULL)
+            return;
+        else
+        {
+            reverse(leaf->left);
+            reverse(leaf->right);
+            temp=leaf->left;
+            leaf->left=leaf->right;
+            leaf->right=temp;
+            
+        }
     }
     void delet(int key,Node* leaf){
         int found;
@@ -203,6 +239,40 @@ public:
         }
         
     }
+    void rootPath(Node* leaf,int stack[],int len){
+        if(leaf==NULL)
+            return;
+        stack[len]=leaf->x;
+        len++;
+       if(leaf->left==NULL && leaf->right==NULL){
+           cout<<"print new path"<<endl;
+            for(int i=0;i<len;i++){
+                cout<<stack[i]<<endl;
+            }
+            cout<<"======"<<endl;
+            return;
+        }
+        else{
+            rootPath(leaf->left,stack,len);
+            rootPath(leaf->right,stack,len);
+        }
+            
+        
+    }
+    Node* LCA(Node* leaf,int node1,int node2){
+        if(leaf==NULL)
+            return NULL;
+        if(leaf->x>node1 && leaf->x>node2){
+            LCA(leaf->left,node1,node2);
+        }
+        else if(leaf->x<node1&&leaf->x<node2){
+            LCA(leaf->right,node1,node2);
+        }
+        else if(leaf->x<node1&&leaf->x>node2 || leaf->x==node1 || leaf->x==node2){
+            cout<<"LCA: "<<leaf->x<<endl;;
+            return leaf;
+        }
+    }
 };
 int main() {
     BST b;
@@ -258,8 +328,10 @@ int main() {
     func=1;
     while (true)
     {
-    cout<<"Enter the function to be performed 1: Insert Node \n"
-            "2: Search Node \n3: Delete Node \n 4. Print tree \n0. exit"<<endl;
+    cout<<"Enter the function to be performed \n1: Insert Node \n"
+            "2: Search Node \n3: Delete Node \n 4. Print tree \n5. Size of tree \n6. Depth of tree\n"
+            "7. Mirror of Tree\n8. Print all path from root to leaf\n"
+            "9.Least Common Ancestor\n0. exit"<<endl;
     cin>>func;
     if (func==0)
         break;
@@ -300,6 +372,54 @@ int main() {
             cout<<"Inorder Trav after deletion"<<endl;
             b.print(leaf);
             cout<<"End"<<endl;
+            break;
+        }
+        case 5:{
+            leaf=root;
+            int size=0;
+            size=b.sizeNode(leaf);
+            cout<<"The size of tree is: "<<size<<endl;
+            break;
+            
+        }
+        case 6:{
+            leaf=root;
+            int size=0;
+            size=b.depth(leaf);
+            cout<<"The depth of tree is: "<<size<<endl;
+            break;
+            
+        }
+        case 7:{
+            leaf=root;
+            b.reverse(leaf);
+            leaf=root;
+            cout<<"Inorder Trav after deletion"<<endl;
+            b.print(leaf);
+            cout<<"End"<<endl;
+            break;
+        }
+        case 8:{
+            int stack[100];
+            leaf=root;
+            b.rootPath(leaf,stack,0);
+            break;
+        }
+        case 9:{
+            int node1,node2,temp;
+            cout<<"Enter Node 1"<<endl;
+            cin>>node1;
+            cout<<"Enter Node 2"<<endl;
+            cin>>node2;
+            //make node 1 greater for ease
+            if (node1<node2){
+                temp=node1;
+                node1=node2;
+                node2=temp;
+            }
+            Node* tmp;
+            tmp=b.LCA(leaf,node1,node2);
+            cout<<"LCA: "<<tmp->x<<endl;
             break;
         }
     }  
